@@ -1,0 +1,43 @@
+{
+	"sources" : 
+	[
+		{
+			"file" : "/home/romain/Documents/Implementation_MicroRos/build/modules/libmicroros/CMakeFiles/libmicroros_project"
+		},
+		{
+			"file" : "/home/romain/Documents/Implementation_MicroRos/build/modules/libmicroros/CMakeFiles/libmicroros_project.rule"
+		},
+		{
+			"file" : "/home/romain/Documents/Implementation_MicroRos/build/modules/libmicroros/CMakeFiles/libmicroros_project-complete.rule"
+		},
+		{
+			"file" : "/home/romain/Documents/Implementation_MicroRos/build/libmicroros-prefix/src/libmicroros_project-stamp/libmicroros_project-build.rule"
+		},
+		{
+			"file" : "/home/romain/Documents/Implementation_MicroRos/build/libmicroros-prefix/src/libmicroros_project-stamp/libmicroros_project-configure.rule"
+		},
+		{
+			"file" : "/home/romain/Documents/Implementation_MicroRos/build/libmicroros-prefix/src/libmicroros_project-stamp/libmicroros_project-download.rule"
+		},
+		{
+			"file" : "/home/romain/Documents/Implementation_MicroRos/build/libmicroros-prefix/src/libmicroros_project-stamp/libmicroros_project-install.rule"
+		},
+		{
+			"file" : "/home/romain/Documents/Implementation_MicroRos/build/libmicroros-prefix/src/libmicroros_project-stamp/libmicroros_project-mkdir.rule"
+		},
+		{
+			"file" : "/home/romain/Documents/Implementation_MicroRos/build/libmicroros-prefix/src/libmicroros_project-stamp/libmicroros_project-patch.rule"
+		},
+		{
+			"file" : "/home/romain/Documents/Implementation_MicroRos/build/libmicroros-prefix/src/libmicroros_project-stamp/libmicroros_project-update.rule"
+		}
+	],
+	"target" : 
+	{
+		"labels" : 
+		[
+			"libmicroros_project"
+		],
+		"name" : "libmicroros_project"
+	}
+}

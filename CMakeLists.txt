@@ -7,4 +7,10 @@ list(APPEND ZEPHYR_EXTRA_MODULES ${CMAKE_CURRENT_SOURCE_DIR}/modules/libmicroros
 find_package(Zephyr REQUIRED HINTS $ENV{ZEPHYR_BASE})
 project(microros_sample_app)
 
-target_sources(app PRIVATE src/main.c)
+target_sources(app PRIVATE
+    src/main.c
+    src/drivers/moteur.c
+    src/capteurs/codeur.c
+    src/capteurs/boussole.c
+    src/controle/pid.c
+)
