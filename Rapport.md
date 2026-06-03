@@ -76,7 +76,7 @@
  section 'bss' will not fit in region 'RAM'
  ```
 
- Car la carte Nucleo STM32F103RB ne dispose que de 20 Ko de RAM. Avec ses paramètres par défaut, Micro-ROS provisionne d'importants buffers de fiabilité et d'historique, exigeant près de 40 Ko de RAM, ce qui provoque un dépassement critique ("overflow") de la section .bss.
+ Car la carte Nucleo STM32F103RB ne dispose que de 20 Ko de RAM. Avec ses paramètres par défaut, Micro-ROS provisionne d'importants buffers de fiabilité et d'historique ce qui provoque un dépassement critique ("overflow") de la section .bss.
 
  Puisque le robot n'a besoin que d'un seul Nœud et d'un seul Publisher (pour envoyer l'angle nécessaire à la boussole), nous allons désactiver tout le reste pour pouvoir mettre Micro-ROS dans les 20 Ko de la STM32.
 
@@ -89,12 +89,9 @@
  region 'RAM' overflowed by 6272 bytes
  ```
 
- J’ai dû avoir recours à un bridage structurel de Micro-ROS (prj.conf) : j’ai strictement limitée au besoin de la PoC : 1 seul Nœud, 1 seul Publisher, et 0 Subscriber/Service. De plus, les tampons d'historique réseau (RMW_HISTORIC et XRCE_DDS_HISTORIC) ont été abaissés à 1 seul message, supprimant toute allocation mémoire superflue.
+ J’ai dû avoir recours à un bridage structurel de Micro-ROS (prj.conf) : j’ai strictement limitée au besoin de la PoC : 1 seul Nœud, 1 seul Publisher, et 0 Subscriber/Service.
 
- Compression du Heap et des Threads Zephyr : L'allocation dynamique globale (Heap Mem Pool) a été drastiquement abaissée à 2 Ko. En parallèle, les piles d'exécution (stacks) des threads applicatifs ont été ajustées au plus juste : 512 octets pour la scrutation des capteurs et le calcul du PID, et 2048 octets pour le thread de communication ROS.
-
- Même après avoir fait rentrer le système dans la RAM, je me suis heurté à un crash silencieux de la carte et à une erreur de compilation persistante sur l'API POSIX (_SC_ADVISORY_INFO). Le crash silencieux était dû à un Buffer Overflow : lors de mes réductions de mémoire, j'avais diminué la taille réservée pour la pile du thread ROS, mais j'avais laissé l'ancienne taille "en dur" (4096 octets) dans l'appel de la fonction k_thread_create. J'ai sécurisé cela en remplaçant la valeur numérique par la macro Zephyr K_THREAD_STACK_SIZEOF().
- Concernant l'erreur de compilation, elle provenait d'un conflit connu sous Zephyr 3.7 : la librairie C par défaut (Picolibc) entre en conflit avec la norme POSIX requise par Micro-ROS. Pour résoudre ce problème définitivement, j'ai forcé Zephyr à utiliser la librairie classique et légère "Newlib Nano" dans mon fichier de configuration (CONFIG_NEWLIB_LIBC_NANO=y), suivi d'une destruction totale du cache de compilation (rm -rf build ...) pour appliquer le changement.
+En parallèle, j'ai ajusté les piles d'exécution (stacks) des threads : 384 octets pour la scrutation des capteurs et le calcul du PID, et 1536 octets pour le thread de communication ROS.
 
   ### Compilation réussie et test agent Micro-Ros
 
@@ -117,7 +114,7 @@ J'ai tenté plusieurs pistes pour débloquer la situation :
 
 Désactivation de la console Zephyr : J'ai complètement coupé les logs textes (printk) de l'OS dans le prj.conf pour m'assurer qu'ils ne venaient pas parasiter et corrompre les paquets de Micro-ROS sur le port série.
 
-Ajustement de la RAM au runtime : J'ai supposé que la compression très importante de la mémoire provoquait un crash de la carte au moment d'exécuter la fonction de ping. J'ai donc essayé de redonner un peu d'espace dynamique au thread ROS et au Heap (autour de 2048 octets), mais en essayant cette solution, il m'a été impossible de réussir à faire passer la compilation.
+Ajustement de la RAM au runtime : J'ai supposé que la compression très importante de la mémoire provoquait un crash de la carte au moment d'exécuter la fonction de ping. J'ai donc essayé de redonner un peu d'espace dynamique au thread ROS et au Heap (2048 octets), mais en essayant cette solution, il m'a été impossible de réussir à refaire passer la compilation.
 
 Malgré ces ajustements et de nombreux resets, la carte n'a jamais pu établir la session avec l'agent.
 

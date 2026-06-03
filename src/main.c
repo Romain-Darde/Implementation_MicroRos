@@ -34,36 +34,20 @@ K_MUTEX_DEFINE(i2c_mutex);
 // Sémaphore pour synchroniser le démarrage du PID
 K_SEM_DEFINE(sem_boussole, 0, 1);
 
-// Définitions des piles pour les threads
-// K_THREAD_STACK_DEFINE(thread_capteurs_stack, 1024);
-// K_THREAD_STACK_DEFINE(thread_pid_stack, 1024);
-
-// Micro-ROS : ile et données pour le thread ROS
 // K_THREAD_STACK_DEFINE(thread_ros_stack, 4096);
 // Réduction de la pile de 4096 à 2560
 // K_THREAD_STACK_DEFINE(thread_ros_stack, 2560);
 
-// // Définitions des piles ultra-compressées
+// // Compression des piles pour passer la compilation
 // K_THREAD_STACK_DEFINE(thread_capteurs_stack, 512);
 // K_THREAD_STACK_DEFINE(thread_pid_stack, 512);
 
-// // Pile ROS réduite au minimum vital
-// K_THREAD_STACK_DEFINE(thread_ros_stack, 2048);
-
-// MARCHE POUR LA COMPILE
-// Définitions des piles au minimum vital absolu
+// Compression des piles pour passer la compilation
 K_THREAD_STACK_DEFINE(thread_capteurs_stack, 384);
 K_THREAD_STACK_DEFINE(thread_pid_stack, 384);
 
-// Pile ROS légèrement compressée (1.5 Ko)
+// Pile ROS compressée et qui passe la compilation
 K_THREAD_STACK_DEFINE(thread_ros_stack, 1536);
-
-// // On redonne de l'oxygène aux tâches
-// K_THREAD_STACK_DEFINE(thread_capteurs_stack, 512);
-// K_THREAD_STACK_DEFINE(thread_pid_stack, 512);
-
-// // Pile ROS sécurisée
-// K_THREAD_STACK_DEFINE(thread_ros_stack, 2048);
 
 struct k_thread thread_ros_data;
 k_tid_t thread_ros_id;
@@ -84,8 +68,6 @@ void thread_capteurs_fn(void *arg1, void *arg2, void *arg3) {
 
     while (1) {
         float nouvel_angle = boussole_get_angle();
-
-        // Filtre pour lisser les lectures de la boussole
 
         // On calcule la différence entre la nouvelle mesure et notre valeur filtrée
         float erreur_angle = nouvel_angle - angle_filtre;
@@ -338,7 +320,7 @@ int main(void) {
     // }
 
     // Valeurs du PID ordre : Kp=1.5, Ki=0.1, Kd=0.5
-    pid_init(&mon_pid, 1.5, 0.0, 0.0);
+    pid_init(&mon_pid, 1.5, 0.1, 0.5);
 
     thread_capteurs_id = k_thread_create(&thread_capteurs_data, thread_capteurs_stack, 
                                          K_THREAD_STACK_SIZEOF(thread_capteurs_stack), 
